@@ -29,7 +29,7 @@
     function handleFiles(files){
         if(files.length) {
             var file = files[0];
-            f_name=file.name;
+            f_name = file.name;
             var reader = new FileReader();
                                               // store the information in the file to an array
             reader.onload = function() {
@@ -38,6 +38,12 @@
             reader.readAsText(file);
         }
     }
+
+    function show_res(res){
+        var obj = document.getElementById("txt");
+        obj.innerHTML = res;
+    }
+
                                               //  judge whether the user chooses "word ladder" or "N grams"
     function Run(){
         var m_choice = document.getElementById("choice");
@@ -50,65 +56,70 @@
     }
 
     function find_wordladder(word1,word2){
-                                               //  I use indexOf() to find the word
-        var have_w1 = array.indexOf(word1);
-        var have_w2 = array.indexOf(word2);
-        if((have_w1 != -1) && (have_w2 != -1)){
-            var bfs_arr = new Array();
-            var arr1 = new Array();
-            var w1,w2;
-            var used = [word1];
-            var find = false;
-            var size = word1.length;
-            var alp = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
-            bfs_arr.push([word1]);
-                                                  // bfs
-            while((!find) && (bfs_arr.length != 0)){
-                arr1 = bfs_arr[0];
-                w1 = arr1.pop();
-                arr1.push(w1);
-                for(var i = 0; i < size; i++){
-                    if(!find){
-                        for(var j = 0; j < 26; j++){
-                            if(!find){
-                                var arr2 = new Array();
-                                                  // copy arr1
-                                for(var m = 0; m < arr1.length; m++){
-                                    arr2.push(arr1[m]);
+        var bfs_arr = new Array();
+        var arr1 = new Array();
+        var w1,w2;
+        var used = [word1];
+        var find = false;
+        var size = word1.length;
+        var alp = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
+        bfs_arr.push([word1]);
+                                                // bfs
+        while((!find) && (bfs_arr.length != 0)){
+            arr1 = bfs_arr[0];
+            w1 = arr1.pop();
+            arr1.push(w1);
+            for(var i = 0; i < size; i++){
+                if(!find){
+                    for(var j = 0; j < 26; j++){
+                        if(!find){
+                            var arr2 = new Array();
+                                                                // copy arr1
+                            for(var m = 0; m < arr1.length; m++){
+                                arr2.push(arr1[m]);
+                            }
+                                                                // change the word
+                            w2 = w1.substr(0,i) + alp[j] + w1.substr(i+1,size);
+                            if(used.indexOf(w2) == -1){           // if the word haven't been used
+                                if(w2 == word2){                // if the word is word2 : ok
+                                    find = true;
+                                    arr2.push(w2);
+                                    var res = "A ladder from " + word1 + " to " + word2 + " is:<br>" + arr2;
+                                    show_res(res);
                                 }
-                                                   // change the word
-                                w2 = w1.substr(0,i) + alp[j] + w1.substr(i+1,size);
-                                if(used.indexOf(w2) == -1){           // if the word haven't been used
-                                    if(w2 == word2){                // if the word is word2 : ok
-                                        find = true;
-                                        arr2.push(w2);
-                                        var obj = document.getElementById("txt");
-                                        obj.innerHTML = "A ladder from " + word1 + " to " + word2 + " is:<br>" + arr2;
-                                    }
-                                    if(array.indexOf(w2) != -1) {       // else if the word exist in the dictionary
-                                        arr2.push(w2);
-                                        bfs_arr.push(arr2);
-                                        used.push(w2);
-                                    }
+                                if(array.indexOf(w2) != -1) {       // else if the word exist in the dictionary
+                                    arr2.push(w2);
+                                    bfs_arr.push(arr2);
+                                    used.push(w2);
                                 }
                             }
                         }
                     }
                 }
-                var n_bfs_arr = new Array();
-                                                //  update the bfs_arr
-                for(var i = 1; i < bfs_arr.length; i++){
-                    n_bfs_arr.push(bfs_arr[i]);
-                }
-                bfs_arr = n_bfs_arr;
             }
-            if(!find){
-                alert("No word ladder found.");
+            var n_bfs_arr = new Array();
+                                                      //  update the bfs_arr
+            for(var i = 1; i < bfs_arr.length; i++){
+                n_bfs_arr.push(bfs_arr[i]);
             }
+            bfs_arr = n_bfs_arr;
         }
-        else{
+        if(!find){
+            alert("No word ladder found.");
+        }
+    }
+
+    function judge_word(word1,word2) {
+                                           //  I use indexOf() to find the word
+        var have_w1 = array.indexOf(word1);
+        var have_w2 = array.indexOf(word2);
+        if ((have_w1 != -1) && (have_w2 != -1)) {
+            find_wordladder(word1, word2);
+        }
+        else {
             alert("Word not found!");
         }
+
     }
 
     function wl(){
@@ -122,14 +133,17 @@
                 var w2 = prompt("Word #2");
                 var word1 = w1.toLowerCase();
                 var word2 = w2.toLowerCase();
-                if(word1.length != word2.length){
+                if(word1.length == 0 || word2.length == 0){
+                    alert("Word not found!");
+                }
+                else if(word1.length != word2.length){
                     alert("The two words must be the same length.");
                 }
                 else if(word1 == word2){
                     alert("The two words must be different.");
                 }
                 else{
-                    find_wordladder(word1,word2);
+                    judge_word(word1,word2);
                 }
                 break;
             }
@@ -156,6 +170,15 @@
                 case '9': {
                     break;
                 }
+                case '-':{
+                    if(i == 0){
+                        break;
+                    }
+                    else{
+                        val = false;
+                        break;
+                    }
+                }
                 default: {
                     val = false;
                     break;
@@ -163,6 +186,11 @@
             }
         }
         return val;
+    }
+
+    function get_randnum(max_num){
+        var rand = Math.round(Math.random() * max_num ) - 1;
+        return rand;
     }
 
     function sear(Arr,arr){                   // search an array from a two-dimensional array
@@ -193,6 +221,7 @@
         var art2 = new Array();
         art1.push(array.slice(0, N - 1));
         art2.push([array[N - 1]]);
+
                                               // create two arrays to store the "grams"
         for(var i = 1; i < array.length - N; i++){
             var m_arr = array.slice(i, i + N - 1);
@@ -205,8 +234,9 @@
                 art2.push([array[i + N - 1]]);
             }
         }
+
                                                // get a random array
-        var rand = Math.round(Math.random() * art1.length ) - 1;
+        var rand = get_randnum(art1.length);
         var arr1 = new Array();
         var arr2 = new Array();
         var arr3 = new Array();
@@ -218,9 +248,10 @@
             res = res + " " + arr1[i];
             arr3.push(arr1[i]);
         }
+
         while(num < n){
                                                   // get a random word from the following array of arr1
-            var tem = Math.round(Math.random() * arr2.length) - 1;
+            var tem = get_randnum(arr2.length);
             if(tem != -1) {
                 var m_rand = Math.round((Math.random() + 1) * arr2.length / 2) - 1;
                                                    // add the word to res
@@ -238,8 +269,7 @@
                 }
             }
         }
-        var obj = document.getElementById("txt");
-        obj.innerHTML = res;
+        show_res(res);
     }
 
     function ng(){
